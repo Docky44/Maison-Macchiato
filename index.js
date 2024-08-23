@@ -1,52 +1,87 @@
-const { Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
-const colors = require("colors")
-const { readdirSync, fs } = require("fs");
+const {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Partials,
+} = require("discord.js");
+const colors = require("colors");
+const { readdirSync } = require("fs");
 const mongoose = require("mongoose");
-require('dotenv').config();
-require('./deploy-commands');
+require("dotenv").config();
+require("./deploy-commands");
 
-mongoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 
 const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildBans, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildWebhooks, GatewayIntentBits.GuildInvites, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.GuildScheduledEvents, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
-    partials: [Partials.Channel, Partials.GuildMember, Partials.GuildScheduledEvent, Partials.Message, Partials.Reaction, Partials.ThreadMember, Partials.User],
-    restTimeOffset: 0,
-    failIfNotExists: false,
-    allowedMentions: {
-        parse: ["roles", "users", "everyone"],
-        repliedUser: false
-    }
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildIntegrations,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.GuildScheduledEvents,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  partials: [
+    Partials.Channel,
+    Partials.GuildMember,
+    Partials.GuildScheduledEvent,
+    Partials.Message,
+    Partials.Reaction,
+    Partials.ThreadMember,
+    Partials.User,
+  ],
+  restTimeOffset: 0,
+  failIfNotExists: false,
+  allowedMentions: {
+    parse: ["roles", "users", "everyone"],
+    repliedUser: false,
+  },
 });
 client.config = require("./config.json");
 
 client.color = 0x00ffa5;
-client.colorWarn = 0xFFA500;
-client.colorError = 0xFF0000;
-client.colorSucces = 0x00FF00;
+client.colorWarn = 0xffa500;
+client.colorError = 0xff0000;
+client.colorSucces = 0x00ff00;
 
 // chargement des events
-const eventFolder = readdirSync(`${__dirname}/events`)
+const eventFolder = readdirSync(`${__dirname}/events`);
 for (const file of eventFolder) {
-    const eventfile = readdirSync(`${__dirname}/events/${file}`).filter(files => files.endsWith('.js'));
-    for (const files of eventfile) {
-        const event = require(`./events/${file}/${files}`)
-        if (event.once) {
-            client.once(event.name, (...args) => event.execute(client, ...args));
-        } else {
-            client.on(event.name, (...args) => event.execute(client, ...args));
-        }
+  const eventfile = readdirSync(`${__dirname}/events/${file}`).filter((files) =>
+    files.endsWith(".js")
+  );
+  for (const files of eventfile) {
+    const event = require(`./events/${file}/${files}`);
+    if (event.once) {
+      client.once(event.name, (...args) => event.execute(client, ...args));
+    } else {
+      client.on(event.name, (...args) => event.execute(client, ...args));
     }
+  }
 }
 
 // chargement des commandes
 client.commands = new Collection();
-const commandFolders = readdirSync(`${__dirname}/commands`)
+const commandFolders = readdirSync(`${__dirname}/commands`);
 for (const folder of commandFolders) {
-    const commandFiles = readdirSync(`${__dirname}/commands/${folder}`).filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const command = require(`./commands/${folder}/${file}`);
-        client.commands.set(command.name, command);
-    }
+  const commandFiles = readdirSync(`${__dirname}/commands/${folder}`).filter(
+    (file) => file.endsWith(".js")
+  );
+  for (const file of commandFiles) {
+    const command = require(`./commands/${folder}/${file}`);
+    client.commands.set(command.name, command);
+  }
 }
 
 //client.dbGuild = require('./database/guild.js');
@@ -65,6 +100,6 @@ for (const folder of commandFolders) {
 client.login(process.env.TOKEN);
 // gestion des erreurs
 process.on("unhandledRejection", (error) => {
-    if (error.code === 10062) return; // Unknown interaction
-    console.log(`[ERROR] ${error}`.red);
-})
+  if (error.code === 10062) return; // Unknown interaction
+  console.log(`[ERROR] ${error}`);
+});
