@@ -100,6 +100,5 @@ for (const folder of commandFolders) {
 client.login(process.env.TOKEN);
 // gestion des erreurs
 process.on("unhandledRejection", (error) => {
-  if (error.code === 10062) return; // Unknown interaction
   console.log(`[ERROR] ${error}`);
 });

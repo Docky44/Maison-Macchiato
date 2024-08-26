@@ -16,13 +16,7 @@ module.exports = {
 
     var compteurStatus = 1;
     setInterval(async () => {
-      status = [
-        `ces ${client.guilds.cache.size.toLocaleString("fr-FR")} serveurs`,
-        `ces ${client.guilds.cache
-          .reduce((acc, guild) => acc + guild.memberCount, 0)
-          .toLocaleString("fr-FR")} utilisateurs`,
-        `sa commande /help`,
-      ];
+      status = [`couler le café ☕`];
       compteurStatus = (compteurStatus + 1) % status.length;
       client.user.setPresence({
         activities: [
